@@ -20,6 +20,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ;
 
+    const declOfNum = (number, titles) => number + ' ' + titles[(number % 100 > 4 && number % 100 < 20) ?
+        2 : [2, 0, 1, 1, 1, 2][(number % 10 < 5) ? number % 10 : 5]];
+
+    const calcDeadline = (data) => {
+        const deadline = new Date(data);
+        const toDay  = Date.now();
+
+        const remaining = (deadline - toDay) / 1000 / 60 / 60;
+
+        if (remaining / 24 > 2 ) {
+            return declOfNum(Math.floor(remaining / 24), ['день', 'дня', 'дней']);
+        }
+
+        return declOfNum(Math.floor(remaining), ['час', 'часа', 'часов']);
+    }
+
     const displayOrders = () => {
         tableOrders.textContent = "";
         orders.forEach((order, i) => {
@@ -28,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${i + 1}</td>
                     <td>${order.title}</td>
                     <td class="${order.currency}"></td>
-                    <td>${order.deadline}</td>
+                    <td>${calcDeadline(order.deadline)}</td>
                 </tr>`;
         });
     };
@@ -85,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         emailBlock.href = 'mailto:' + email;
         emailBlock.textContent = email;
         descriptionBlock.textContent = description;
-        deadlineBlock.textContent = deadline;
+        deadlineBlock.textContent = calcDeadline(deadline);
         countBlock.textContent = amount;
         currencyBlock.classList.add(currency);
         phoneBlock && (phoneBlock.href = 'tel:' + phone);
@@ -105,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     customer.addEventListener('click', () => {
         blockChoice.style.display = 'none';
+        const toDay = new Date().toISOString().substring(0, 10);
+        document.getElementById('deadline').min = toDay;
         blockCustomer.style.display = 'block';
         btnExit.style.display = 'block';
     });
